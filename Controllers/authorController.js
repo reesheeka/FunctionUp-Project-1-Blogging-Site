@@ -1,6 +1,62 @@
 const authorModel = require("../Models/authorModel")
 const jwt = require("jsonwebtoken");
 
+
+
+
+
+
+
+const stringvalid =/[^(A-Z)]+[a-z]+(?:(?:|['_\. ])([a-z]*(\.\D)?[a-z])+)*$/
+const namepattern=/[^A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // function isEmail(email) {
 
 //     var emailFormat = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
