@@ -1,17 +1,17 @@
 const jwt = require("jsonwebtoken");
 const blogModel = require("../Models/blogModel");
+const mongoose = require("mongoose");
 
-//---------------------authentication--------------------//
+
+// //---------------------authentication--------------------//
 
 const authenticate = function (req, res, next) {
 
     try {
         const token = req.headers["x-api-key"]
-
         if (!token) {
             return res.status(401).send({ status: false, msg: "Token must be present" });
         }
-
         const decodedToken = jwt.verify(token, "project1-room14-key");
         req.decodedToken = decodedToken
 
@@ -34,8 +34,10 @@ const authorise = async function (req, res, next) {
 
     try {
         const decodedToken = req.decodedToken
+        
         let blogId = req.params.blogId;
-        const blog = await blogModel.findOne(blogId);
+    
+        const blog = await blogModel.findById(blogId);
 
         if (!blog) {
             return res.status(404).send({ status: false, msg: "Blog is not found" });
@@ -57,4 +59,7 @@ const authorise = async function (req, res, next) {
 
 
 module.exports = { authenticate, authorise }
+
+
+
 

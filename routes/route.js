@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 const authorController = require("../Controllers/authorController");
 const blogController = require("../Controllers/blogController");
 const MW = require("../Middlewares/auth");
@@ -6,22 +6,21 @@ const express = require("express")
 const router = express.Router();
 
 
+router.post('/authors', authorController.createAuthor);
 
+router.post("/login", authorController.loginAuthor);
 
-
-router.post('/createAuthor', authorController.createAuthor);
-
-router.post('/createBlog', MW.authenticate, blogController.createBlog);
-
-router.get('/getBlog', MW.authenticate, blogController.getBlog);
+router.post('/blogs', MW.authenticate, blogController.createBlog);
 
 router.put("/blogs/:blogId", MW.authenticate, MW.authorise, blogController.updateBlog);
+
+router.get('/blogs', MW.authenticate, blogController.getBlog);
 
 router.delete("/blogs/:blogId", MW.authenticate, MW.authorise, blogController.deleteBlogByPathParam);
 
 router.delete("/blogs",MW.authenticate, blogController.deleteByQuery);
 
-router.post("/loginAuthor", authorController.loginAuthor);
+
 
 
 
@@ -33,26 +32,6 @@ router.all("/*", function (req, res) {
     })
 }catch(err){res.send(err.message)}
 })
-
-
-
-
-
-
-
-=======
-const AuthorController= require("../controllers/authorController")
-const BlogController= require("../controllers/blogController")
-
-const router = express.Router();
-
-router.post('/createAuthor', AuthorController.createAuthor)
-
-router.post('/createBlog', BlogController.createBlog)
-
-router.get('/getBlog', BlogController.getBlog)
->>>>>>> 71979613dbfcf9c9eedc82f2718a431fe0304ff5
-
 
 
 module.exports = router;
