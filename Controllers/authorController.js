@@ -1,58 +1,6 @@
 const authorModel = require("../Models/authorModel")
 const jwt = require("jsonwebtoken");
-
-
-
-
-
-
-
 const stringvalid =/[^(A-Z)]+[a-z]+(?:(?:|['_\. ])([a-z]*(\.\D)?[a-z])+)*$/
-const namepattern=/[^A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -83,22 +31,22 @@ const createAuthor = async function (req, res) {
             return res.status(400).send({ msg: "Please Enter details" });
         }
 
-        let { firstName, lastName, title, email, password } = data;
+        let { fname, lname, title, email, password } = data;
 
-        if (!firstName) {
-            return res.status(400).send({ msg: "FirstName is required" });
+        if (!fname) {
+            return res.status(400).send({ msg: "fname is required" });
         }
-        if (firstName) {
-            if (!stringVerify(firstName)) {
-                return res.status(400).send({ msg: "FirstName should be type string" });
+        if (fname) {
+            if (!stringVerify(fname)) {
+                return res.status(400).send({ msg: "fname should be type string" });
             }
         }
-        if (!lastName) {
-            return res.status(400).send({ msg: "LastName is required" });
+        if (!lname) {
+            return res.status(400).send({ msg: "lname is required" });
         }
-        if (lastName) {
-            if (!stringVerify(lastName)) {
-                return res.status(400).send({ msg: "LastName should be type string" });
+        if (lname) {
+            if (!stringVerify(lname)) {
+                return res.status(400).send({ msg: "lname should be type string" });
             }
         }
 
@@ -131,8 +79,11 @@ const createAuthor = async function (req, res) {
             return res.status(400).send({ msg: "Please enter valid Email" });
         }
 
+        let emailinUse= await authorModel.findOne({email:email})
+        if(emailinUse)return res.status(400).send({status:false,msg:"email already in use"})
+
         let authordata = await authorModel.create(data)
-        res.status(201).send({ data: authordata });
+         return  res.status(201).send({ data: authordata });
     }
     catch (err) {
         res.status(500).send({ error: err.message, status: false });
@@ -163,7 +114,7 @@ const loginAuthor = async function (req, res) {
             return res.status(404).send({ status: false, msg: "Email or Password is not corerct" });
         }
 
-        let token = jwt.sign({ authorId: author._id.toString() }, "project1-room14-key")
+        let token = jwt.sign({ authorId: author._id }, "project1-room14-key")
 
         return res.status(200).send({ status: true, token: token });
     }

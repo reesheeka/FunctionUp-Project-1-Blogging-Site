@@ -35,14 +35,14 @@ const authorise = async function (req, res, next) {
     try {
         const decodedToken = req.decodedToken
         let blogId = req.params.blogId;
-        const blog = await blogModel.findById(blogId);
+        const blog = await blogModel.findOne(blogId);
 
         if (!blog) {
             return res.status(404).send({ status: false, msg: "Blog is not found" });
         }
 
         let tokenUser = decodedToken.authorId;
-        let loginUser = blog.authorId.toString();
+        let loginUser = blog.authorId
 
         if (tokenUser == loginUser) {
             next()
@@ -53,6 +53,7 @@ const authorise = async function (req, res, next) {
         return res.status(500).send({ status: false, error: err.message });
     }
 };
+
 
 
 module.exports = { authenticate, authorise }
