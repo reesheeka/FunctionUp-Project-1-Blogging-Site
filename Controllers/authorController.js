@@ -1,13 +1,13 @@
-const authorModel = require("../Models/authorModel")
+const authorModel = require("../Models/authorModel");
 const jwt = require("jsonwebtoken");
-const stringvalid =/[^(A-Z)]+[a-z]+(?:(?:|['_\. ])([a-z]*(\.\D)?[a-z])+)*$/
 
 
 function stringVerify(value) {
-    if (typeof value !== "string" || value.length == 0) {
+    if (typeof value !== "string" || value.trim().length == 0) {
         return false
+    } else {
+        return true
     }
-    return true
 }
 
 //--------------------------createAuthor api---------------------//
@@ -22,55 +22,61 @@ const createAuthor = async function (req, res) {
         let { fname, lname, title, email, password } = data;
 
         if (!fname) {
-            return res.status(400).send({ msg: "fname is required" });
+            return res.status(400).send({ status: false, msg: "Please provide fname" });
         }
         if (fname) {
             if (!stringVerify(fname)) {
-                return res.status(400).send({ msg: "fname should be type string" });
+                return res.status(400).send({ status: false, msg: "fname should be type string" });
             }
         }
+
         if (!lname) {
-            return res.status(400).send({ msg: "lname is required" });
+            return res.status(400).send({ status: false, msg: "Please provide lname" });
         }
         if (lname) {
             if (!stringVerify(lname)) {
-                return res.status(400).send({ msg: "lname should be type string" });
+                return res.status(400).send({ status: false, msg: "lname should be type string" });
             }
         }
+
         if (!title) {
-            return res.status(400).send({ msg: "Title is required" });
+            return res.status(400).send({ status: false, msg: "Please provide title" });
         }
         if (title) {
             if (!stringVerify(title)) {
-                return res.status(400).send({ msg: "Title should be string" });
+                return res.status(400).send({ status: false, msg: "Title should be string" });
             } if (title != "Mr" && title != "Miss" && title != "Mrs") {
-                return res.status(400).send({ msg: "Please write title like Mr, Mrs, Miss" });
+                return res.status(400).send({ status: false, msg: "Please write title like Mr, Mrs, Miss" });
             }
         }
-        if (!password) {
-            return res.status(400).send({ msg: "Password is required" });
-        }
-        const passwordFormat = /^[a-zA-Z0-9@]{6,10}$/
-        const validPassword = passwordFormat.test(password)
-        if (!validPassword) {
-            return res.status(400).send({ status: false, msg: " Incorrect Password, It should be of 6-10 digits with atlest one special character, alphabet and number" });
-        }
+
         if (!email) {
-            return res.status(400).send({ msg: "Email is required" })
+            return res.status(400).send({ status: false, msg: "Please provide email" })
         }
         const emailFormat = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
         const validEmail = emailFormat.test(email)
         if (!validEmail) {
-            return res.status(400).send({ msg: "Please enter valid Email" });
+            return res.status(400).send({ status: false, msg: "Please enter valid Email" });
         }
-        let emailinUse= await authorModel.findOne({email:email})
-        if(emailinUse)return res.status(400).send({status:false,msg:"email already in use"})
+        let emailinUse = await authorModel.findOne({ email: email })
+        if (emailinUse) {
+            return res.status(400).send({ status: false, msg: "Please provide another email, provided email is already in use" });
+        }
+
+        if (!password) {
+            return res.status(400).send({ status: false, msg: "Password is required" });
+        }
+        const passwordFormat = /^[a-zA-Z0-9@]{6,10}$/
+        const validPassword = passwordFormat.test(password)
+        if (!validPassword) {
+            return res.status(400).send({ status: false, msg: " Please provide password of 6-10 digits with at least one special character, alphabet and number" });
+        }
 
         let authordata = await authorModel.create(data)
-         return  res.status(201).send({ status:true , data: authordata });
+        return res.status(201).send({ status: true, data: authordata });
     }
     catch (err) {
-        res.status(500).send({ error: err.message, status: false });
+       return res.status(500).send({ status: false, error: err.message, });
     }
 }
 
@@ -84,25 +90,26 @@ const loginAuthor = async function (req, res) {
         const Password = req.body.password;
 
         if (!Email) {
-            return res.status(400).send({ msg: "Email is not present" });
+            return res.status(400).send({ status: false, msg: "Please provide email" });
         }
 
         if (!Password) {
-            return res.status(400).send({ msg: "Password is not present" });
+            return res.status(400).send({ status: false, msg: "Please provide password" });
         }
 
-        let author = await authorModel.findOne({ email: Email, password: Password });
+        let author = await authorModel.findOne({ email: Email, password: Password })
 
         if (!author) {
-            return res.status(404).send({ status: false, msg: "Email or Password is not corerct" });
+            return res.status(401).send({ status: false, msg: "Email or Password is not corerct" });
         }
 
-        let token = jwt.sign({ authorId: author._id }, "project1-room14-key")
+        let token = jwt.sign({ userId: author._id }, "project1-room14-key")
 
-        return res.status(200).send({ status: true, data: token });
+        res.setHeader("x-api-key", token);
+        return res.status(200).send({ status: true, token: token });
     }
     catch (err) {
-        return res.status(500).send({ status: false, msg: err.message });
+        return res.status(500).send({ status: false, error: err.message });
     }
 }
 

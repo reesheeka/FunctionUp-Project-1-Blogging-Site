@@ -1,8 +1,7 @@
-
 const authorController = require("../Controllers/authorController");
 const blogController = require("../Controllers/blogController");
 const MW = require("../Middlewares/auth");
-const express = require("express")
+const express = require("express");
 const router = express.Router();
 
 
@@ -18,19 +17,17 @@ router.get('/blogs', MW.authenticate, blogController.getBlog);
 
 router.delete("/blogs/:blogId", MW.authenticate, MW.authorise, blogController.deleteBlogByPathParam);
 
-router.delete("/blogs",MW.authenticate, blogController.deleteByQuery);
+router.delete("/blogs", MW.authenticate, blogController.deleteByQueryParam);
 
 
 
 
 
 router.all("/*", function (req, res) {
-    try{
-    res.status(404).send({
-        status: false,
-        msg: "The api you request is not available"
-    })
-}catch(err){res.send(err.message)}
+    try {
+        return res.status(404).send({ status: false, msg: "The api you request is not available" })
+    } 
+    catch (err) { res.send(err.message) }
 })
 
 

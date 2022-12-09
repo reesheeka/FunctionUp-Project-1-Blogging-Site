@@ -3,27 +3,26 @@ const blogModel = require("../Models/blogModel");
 const mongoose = require("mongoose");
 
 
-// //---------------------authentication--------------------//
+//---------------------authentication--------------------//
 
 const authenticate = function (req, res, next) {
 
     try {
-        const token = req.headers["x-api-key"]
+
+        let token = req.headers["x-api-key"]
+
         if (!token) {
             return res.status(401).send({ status: false, msg: "Token must be present" });
         }
-        const decodedToken = jwt.verify(token, "project1-room14-key");
-        req.decodedToken = decodedToken
 
-        if (decodedToken) {
-            next()
-        }
-        else {
-            return res.status(401).send({ status: false, msg: "Token is invalid" });
-        }
+        let decodedToken = jwt.verify(token, "project1-room14-key")
+
+        req.decodedToken = decodedToken.userId
+        
+        next()
+
     } catch (err) {
-        console.log("this is the error :", err.message)
-        res.status(500).send({ msg: "Error", error: err.message })
+        res.status(401).send({ status: false, msg: "Invalid Token" });
     }
 }
 
@@ -33,28 +32,35 @@ const authenticate = function (req, res, next) {
 const authorise = async function (req, res, next) {
 
     try {
-        const decodedToken = req.decodedToken
-        
-        let blogId = req.params.blogId;
-    
-        const blog = await blogModel.findById(blogId);
+     
+        let blogId = req.params.blogId
+
+        const blog = await blogModel.findById(blogId)
+
+        if (blogId) {
+            if (!mongoose.Types.ObjectId.isValid(blogId)) {
+                return res.status(400).send({ status: false, msg: "!Oops blogId is not valid" })
+            }
+        }
 
         if (!blog) {
             return res.status(404).send({ status: false, msg: "Blog is not found" });
         }
 
-        let tokenUser = decodedToken.authorId;
-        let loginUser = blog.authorId
+        let decodedToken = req.decodedToken
+        let authorId = blog.authorId
 
-        if (tokenUser == loginUser) {
+        if (decodedToken == authorId) {
             next()
         } else {
-            return res.status(403).send({ status: false, msg: "unauthorized  user info doesn't match" });
+            return res.status(403).send({ status: false, msg: "Unauthorized  user, info doesn't match" });
         }
-    } catch (err) {
+
+    }
+    catch (err) {
         return res.status(500).send({ status: false, error: err.message });
     }
-};
+}
 
 
 
