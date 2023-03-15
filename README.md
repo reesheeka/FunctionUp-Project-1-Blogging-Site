@@ -1,8 +1,7 @@
-# Blogging Site Project Requirement
+# Blogging Site Project Requirements
 
 # Phase I
-Models
-
+# Models
 # Author Model
 { fname: { mandatory}, lname: {mandatory}, title: {mandatory, enum[Mr, Mrs, Miss]}, email: {mandatory, valid email, unique}, password: {mandatory} }
 
@@ -71,19 +70,19 @@ Refer below sample
 A Postman collection and request sample
 
 # Response
-Successful Response structure
+# Successful Response structure
 {
   status: true,
   data: {
 
   }
 }
-Error Response structure
+# Error Response structure
 {
   status: false,
   msg: ""
 }
-Collections
+# Collections
 Blogs
 {
   "title": "How to win friends",
@@ -98,7 +97,7 @@ Blogs
   "createdAt": "2021-09-17T04:25:07.803Z",
   "updatedAt": "2021-09-17T04:25:07.803Z",
 }
-Successful Login Response structure
+# Successful Login Response structure
 {
   status: true,
   data: {
