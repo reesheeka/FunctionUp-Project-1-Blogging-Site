@@ -1,4 +1,5 @@
-# project01blogging
+# Blogging Site Project Requirement
+
 # Phase I
 Models
 
